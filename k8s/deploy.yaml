@@ -1,31 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: $POD_NAME-deployment
+  name: section-project-deployment
   labels:
-    app: $POD_NAME
+    app: console-project
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: $POD_NAME
+      app: console-project
   template:
     metadata:
       labels:
-        app: $POD_NAME
+        app: console-project
     spec:
       containers:
-        - name: $POD_NAME
+        - name: console-project
           image: $FULL_IMAGE_WITH_TAG
           imagePullPolicy: Always
           resources:
             limits:
               cpu: 2000m
-              memory: 512Mi
+              memory: 2000Mi
             requests:
-              cpu: 2000m
-              memory: 512Mi
+              cpu: 50m
+              memory: 50Mi
           ports:
-            - containerPort: 80
+            - containerPort: 3000
+          startupProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
       imagePullSecrets:
         - name: regcred
